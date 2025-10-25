@@ -1,0 +1,114 @@
+# ---------- เริ่มต้น ----------
+$root = "MoneyVoice_FullRepo"
+Remove-Item -Recurse -Force $root -ErrorAction SilentlyContinue
+mkdir $root; cd $root
+
+# ---------- สร้างโครงสร้างโฟลเดอร์ ----------
+mkdir -Force app\src\main\java\com\jisolutions\moneyvoice
+mkdir -Force app\src\main\res\layout
+mkdir -Force .github\workflows
+mkdir -Force gradle\wrapper
+
+# ---------- settings.gradle ----------
+@"
+rootProject.name = 'MoneyVoice'
+include ':app'
+"@ > settings.gradle
+
+# ---------- build.gradle (root) ----------
+@"
+// Root build.gradle (simulated)
+buildscript {
+  repositories { google(); mavenCentral() }
+  dependencies { classpath 'com.android.tools.build:gradle:8.0.2' }
+}
+allprojects { repositories { google(); mavenCentral() } }
+"@ > build.gradle
+
+# ---------- gradle-wrapper.properties ----------
+@"
+distributionUrl=https\://services.gradle.org/distributions/gradle-8.0.2-bin.zip
+"@ > gradle\wrapper\gradle-wrapper.properties
+
+# ---------- gradlew (จำลอง) ----------
+@"
+#!/usr/bin/env sh
+echo 'Placeholder gradlew - ใช้ Android Studio หรือ Gradle จริงเมื่อ build'
+"@ > gradlew
+Set-Content -Path gradlew -Value (Get-Content gradlew) -NoNewline
+icacls gradlew /grant Everyone:F 2>$null
+
+# ---------- gradlew.bat ----------
+@"
+@echo off
+echo Placeholder gradlew.bat
+"@ > gradlew.bat
+
+# ---------- README ----------
+@"
+# MoneyVoice (Simulated)
+
+โปรเจกต์นี้เป็นโครงสร้างตัวอย่างของแอป "MoneyVoice"
+ใช้สำหรับจำลองการสร้าง APK และเตรียมสำหรับอัปโหลดไปยัง GitHub Actions.
+"@ > README_TH_EN.md
+
+# ---------- app/build.gradle ----------
+@"
+plugins {
+    id 'com.android.application'
+}
+android {
+    namespace 'com.jisolutions.moneyvoice'
+    compileSdk 34
+    defaultConfig {
+        applicationId 'com.jisolutions.moneyvoice'
+        minSdk 29
+        targetSdk 34
+        versionCode 1
+        versionName '1.0'
+    }
+    buildTypes {
+        release { minifyEnabled false }
+    }
+}
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+}
+"@ > app\build.gradle
+
+# ---------- AndroidManifest.xml ----------
+@"
+<manifest xmlns:android='http://schemas.android.com/apk/res/android'
+    package='com.jisolutions.moneyvoice'>
+    <uses-permission android:name='android.permission.BIND_NOTIFICATION_LISTENER_SERVICE' />
+    <uses-permission android:name='android.permission.FOREGROUND_SERVICE' />
+    <application android:label='MoneyVoice'>
+        <activity android:name='.MainActivity' android:exported='true'>
+            <intent-filter>
+                <action android:name='android.intent.action.MAIN' />
+                <category android:name='android.intent.category.LAUNCHER' />
+            </intent-filter>
+        </activity>
+        <service android:name='.NotificationService'
+                 android:permission='android.permission.BIND_NOTIFICATION_LISTENER_SERVICE'
+                 android:exported='true'/>
+    </application>
+</manifest>
+"@ > app\src\main\AndroidManifest.xml
+
+# ---------- MainActivity.kt ----------
+@"
+package com.jisolutions.moneyvoice
+
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import android.widget.TextView
+
+class MainActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val tv = TextView(this)
+        tv.text = "MoneyVoice - ตัวอย่างใช้งานจำลอง"
+        setContentView(tv)
+    }
+}
